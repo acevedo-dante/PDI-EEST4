@@ -5,7 +5,7 @@
 
 Integrantes:
 
-- {Acevedo, Dante} | [@acevedo-dante](https://github.com/acevedo.dante)
+- {Acevedo, Dante (gay)} | [@acevedo-dante](https://github.com/acevedo.dante)
 - {Apellido, Nombre} | [@username](https://github.com/username)
 - {Apellido, Nombre} | [@username](https://github.com/username)
 - {Apellido, Nombre} | [@username](https://github.com/username)
