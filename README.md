@@ -5,10 +5,10 @@
 
 Integrantes:
 
-- {Acevedo, Dante} | [@acevedo-dante](https://github.com/acevedo-dante)
-- {Mondo, Lorenzo} | [@lorendou](https://github.com/lorendou)
-- {Ceresani, Juan Cruz} | [@Gambeta-Latorre](https://github.com/Gambeta-Latorre)
-- {Apellido, Nombre} | [@username](https://github.com/username)
+- Acevedo, Dante | [@acevedo-dante](https://github.com/acevedo-dante)
+- Mondo, Lorenzo | [@lorendou](https://github.com/lorendou)
+- Ceresani, Juan Cruz | [@Gambeta-Latorre](https://github.com/Gambeta-Latorre)
+- Apellido, Nombre | [@username](https://github.com/username)
 
 Proyecto institucional **E.E.S.T Nº4 de Berazategui**.
 
