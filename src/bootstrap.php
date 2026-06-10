@@ -20,4 +20,21 @@ $app->get('/', function ($request, $response) use ($renderer) {
   return $renderer->render($response, 'index.php');
 });
 
+// Listado de Productos
+$app->get('/productos', function ($request, $response) use ($renderer) {
+  return $renderer->render($response, 'productos/index.php');
+});
+
+// Detalle de un Producto
+$app->get('/productos/{id}', function ($request, $response, $args) use ($renderer) {
+  return $renderer->render($response, 'productos/show.php', [
+    'id' => $args['id']
+  ]);
+});
+
+// Crear Producto
+$app->get('/create/productos', function ($request, $response) use ($renderer) {
+  return $renderer->render($response, 'productos/store.php');
+});
+
 return $app;

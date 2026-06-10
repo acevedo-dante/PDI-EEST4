@@ -1,0 +1,1 @@
+<h1>Detalle del Producto <?= $id ?></h1>
