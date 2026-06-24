@@ -15,25 +15,12 @@ $app = AppFactory::create();
 // Crear el motor de plantillas
 $renderer = new PhpRenderer(__DIR__ . '/views');
 
-// Ruta/Vista principal
+// Ruta principal
 $app->get('/', function ($request, $response) use ($renderer) {
   return $renderer->render($response, 'index.php');
 });
 
-// Listado de Productos
-$app->get('/productos', function ($request, $response) use ($renderer) {
-  return $renderer->render($response, 'productos/index.php');
-});
-
-// Detalle de un Producto
-$app->get('/productos/{id}', function ($request, $response, $args) use ($renderer) {
-  return $renderer->render($response, 'productos/show.php', [
-    'id' => $args['id']
-  ]);
-});
-
-
- // Listado de Productos
+// LISTADO DE PRODUCTOS
 $app->get('/productos', function ($request, $response) use ($renderer) {
 
   // ARRAY DE PRODUCTOS
@@ -57,3 +44,31 @@ $app->get('/productos', function ($request, $response) use ($renderer) {
     'productos' => $productos
   ]);
 });
+
+// DETALLE DE PRODUCTO
+$app->get('/productos/{id}', function ($request, $response, $args) use ($renderer) {
+
+  $productos = [
+    ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
+    ['id' => 2, 'name' => 'Botines', 'price' => 45000],
+    ['id' => 3, 'name' => 'Pelota', 'price' => 2000],
+    ['id' => 4, 'name' => 'Guantes de arquero', 'price' => 8000],
+    ['id' => 5, 'name' => 'Medias deportivas', 'price' => 3000]
+  ];
+
+  $id = (int)$args['id'];
+  $producto = null;
+
+  foreach ($productos as $p) {
+    if ($p['id'] === $id) {
+      $producto = $p;
+      break;
+    }
+  }
+
+  return $renderer->render($response, 'productos/show.php', [
+    'producto' => $producto
+  ]);
+});
+
+return $app;
