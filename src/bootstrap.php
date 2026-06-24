@@ -37,4 +37,14 @@ $app->get('/create/productos', function ($request, $response) use ($renderer) {
   return $renderer->render($response, 'productos/store.php');
 });
 
+$app->post('/productos', function ($request, $response) use ($renderer) {
+
+    $datos = $request->getParsedBody();
+
+    return $renderer->render($response, 'productos/resultado.php', [
+        'nombre' => $datos['nombre'],
+        'precio' => $datos['precio'],
+        'descripcion' => $datos['descripcion']
+    ]);
+});
 return $app;
