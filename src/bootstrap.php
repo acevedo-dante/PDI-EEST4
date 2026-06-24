@@ -32,8 +32,6 @@ $app->get('/productos/{id}', function ($request, $response, $args) use ($rendere
   ]);
 });
 
-// Crear Producto
-$app->get('/productos', function ($request, $response) use ($renderer) {
 
   // 1. ARRAY ASOCIATIVO (productos)
   $productos = [
