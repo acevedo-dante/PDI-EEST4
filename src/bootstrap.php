@@ -20,9 +20,6 @@ $app->get('/', function ($request, $response) use ($renderer) {
   return $renderer->render($response, 'index.php');
 });
 
-// LISTADO DE PRODUCTOS
-$app->get('/productos', function ($request, $response) use ($renderer) {
-
   // ARRAY DE PRODUCTOS
   $productos = [
     ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
