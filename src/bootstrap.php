@@ -40,7 +40,6 @@ $app->get('/', function ($request, $response) use ($renderer) {
   return $renderer->render($response, 'productos/index.php', [
     'productos' => $productos
   ]);
-});
 
 // DETALLE DE PRODUCTO
 $app->get('/productos/{id}', function ($request, $response, $args) use ($renderer) {
