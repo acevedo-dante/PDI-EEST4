@@ -33,7 +33,10 @@ $app->get('/productos/{id}', function ($request, $response, $args) use ($rendere
 });
 
 
-  // 1. ARRAY ASOCIATIVO (productos)
+ // Listado de Productos
+$app->get('/productos', function ($request, $response) use ($renderer) {
+
+  // ARRAY DE PRODUCTOS
   $productos = [
     ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
     ['id' => 2, 'name' => 'Botines', 'price' => 45000],
@@ -42,18 +45,15 @@ $app->get('/productos/{id}', function ($request, $response, $args) use ($rendere
     ['id' => 5, 'name' => 'Medias deportivas', 'price' => 3000]
   ];
 
-  // 2. TOMAR QUERY PARAM (?limit=2)
+  // ?limit=
   $queryParams = $request->getQueryParams();
   $limit = isset($queryParams['limit']) ? (int)$queryParams['limit'] : null;
 
-  // 3. APLICAR LIMITE SI EXISTE
   if ($limit) {
     $productos = array_slice($productos, 0, $limit);
   }
 
-  // 4. ENVIAR A LA VISTA
   return $renderer->render($response, 'productos/index.php', [
     'productos' => $productos
   ]);
 });
-return $app;
