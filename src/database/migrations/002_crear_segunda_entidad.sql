@@ -1,5 +1,8 @@
 CREATE TABLE productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    precio DECIMAL(10,2) NOT NULL
+    nombre VARCHAR(150),
+    descripcion VARCHAR(255),
+    precio INT,
+    stock INT,
+    usuario_id INT
 );
