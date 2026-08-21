@@ -6,65 +6,209 @@ use Dotenv\Dotenv;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// Cargar variables de entorno desde el .env
+require __DIR__ . '/database/database.php';
+
 Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
 
-// Crear la aplicacion de Slim
 $app = AppFactory::create();
 
-// Crear el motor de plantillas
 $renderer = new PhpRenderer(__DIR__ . '/views');
 
-// Ruta principal
+$database = new Database();
+$pdo = $database->getConnection();
+
+
+// GET /
+// Página principal
 $app->get('/', function ($request, $response) use ($renderer) {
-  return $renderer->render($response, 'index.php');
+    return $renderer->render($response, 'index.php');
 });
 
-  // ARRAY DE PRODUCTOS
-  $productos = [
-    ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
-    ['id' => 2, 'name' => 'Botines', 'price' => 45000],
-    ['id' => 3, 'name' => 'Pelota', 'price' => 2000],
-    ['id' => 4, 'name' => 'Guantes de arquero', 'price' => 8000],
-    ['id' => 5, 'name' => 'Medias deportivas', 'price' => 3000]
-  ];
 
-  // ?limit=
-  $queryParams = $request->getQueryParams();
-  $limit = isset($queryParams['limit']) ? (int)$queryParams['limit'] : null;
+// GET /productos/
+// Lista todos los productos
+$app->get('/productos/', function ($request, $response) use ($renderer, $pdo) {
 
-  if ($limit) {
-    $productos = array_slice($productos, 0, $limit);
-  }
+    $stmt = $pdo->query('SELECT * FROM productos');
+    $productos = $stmt->fetchAll();
 
-  return $renderer->render($response, 'productos/index.php', [
-    'productos' => $productos
-  ]);
+    return $renderer->render($response, 'productos/index.php', [
+        'productos' => $productos
+    ]);
+});
 
-// DETALLE DE PRODUCTO
-$app->get('/productos/{id}', function ($request, $response, $args) use ($renderer) {
 
-  $productos = [
-    ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
-    ['id' => 2, 'name' => 'Botines', 'price' => 45000],
-    ['id' => 3, 'name' => 'Pelota', 'price' => 2000],
-    ['id' => 4, 'name' => 'Guantes de arquero', 'price' => 8000],
-    ['id' => 5, 'name' => 'Medias deportivas', 'price' => 3000]
-  ];
+// GET /productos/create
+// Muestra el formulario para crear
+$app->get('/productos/create', function ($request, $response) use ($renderer) {
 
-  $id = (int)$args['id'];
-  $producto = null;
+    return $renderer->render($response, 'productos/create.php');
+});
 
-  foreach ($productos as $p) {
-    if ($p['id'] === $id) {
-      $producto = $p;
-      break;
+
+// GET /productos/update/{id}
+// Muestra el formulario para editar
+$app->get('/productos/update/{id}', function ($request, $response, $args) use ($renderer, $pdo) {
+
+    $id = (int) $args['id'];
+
+    $stmt = $pdo->prepare('SELECT * FROM productos WHERE id = ?');
+    $stmt->execute([$id]);
+
+    $producto = $stmt->fetch();
+
+    if (!$producto) {
+        return $renderer->render($response, 'productos/not_found.php');
     }
-  }
 
-  return $renderer->render($response, 'productos/show.php', [
-    'producto' => $producto
-  ]);
+    return $renderer->render($response, 'productos/update.php', [
+        'producto' => $producto
+    ]);
 });
+
+
+// GET /productos/{id}
+// Muestra un producto
+$app->get('/productos/{id}', function ($request, $response, $args) use ($renderer, $pdo) {
+
+    $id = (int) $args['id'];
+
+    $stmt = $pdo->prepare('SELECT * FROM productos WHERE id = ?');
+    $stmt->execute([$id]);
+
+    $producto = $stmt->fetch();
+
+    if (!$producto) {
+        return $renderer->render($response, 'productos/not_found.php');
+    }
+
+    return $renderer->render($response, 'productos/show.php', [
+        'producto' => $producto
+    ]);
+});
+
+
+// POST /productos
+// Crea un producto
+$app->post('/productos', function ($request, $response) use ($pdo) {
+
+    $data = $request->getParsedBody();
+
+    $nombre = $data['nombre'] ?? '';
+    $precio = $data['precio'] ?? 0;
+    $descripcion = $data['descripcion'] ?? '';
+    $stock = $data['stock'] ?? 0;
+
+    try {
+
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare(
+            'INSERT INTO productos (nombre, descripcion, precio, stock)
+             VALUES (?, ?, ?, ?)'
+        );
+
+        $stmt->execute([
+            $nombre,
+            $descripcion,
+            $precio,
+            $stock
+        ]);
+
+        $pdo->commit();
+
+        return $response
+            ->withHeader('Location', '/productos/')
+            ->withStatus(302);
+
+    } catch (Exception $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $e;
+    }
+});
+
+
+// PUT /productos/{id}
+// Actualiza un producto
+$app->put('/productos/{id}', function ($request, $response, $args) use ($pdo) {
+
+    $id = (int) $args['id'];
+
+    $data = $request->getParsedBody();
+
+    $nombre = $data['nombre'] ?? '';
+    $precio = $data['precio'] ?? 0;
+    $descripcion = $data['descripcion'] ?? '';
+    $stock = $data['stock'] ?? 0;
+
+    try {
+
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare(
+            'UPDATE productos
+             SET nombre = ?, descripcion = ?, precio = ?, stock = ?
+             WHERE id = ?'
+        );
+
+        $stmt->execute([
+            $nombre,
+            $descripcion,
+            $precio,
+            $stock,
+            $id
+        ]);
+
+        $pdo->commit();
+
+        return $response
+            ->withHeader('Location', '/productos/' . $id)
+            ->withStatus(302);
+
+    } catch (Exception $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $e;
+    }
+});
+
+
+// DELETE /productos/{id}
+// Elimina un producto
+$app->delete('/productos/{id}', function ($request, $response, $args) use ($pdo) {
+
+    $id = (int) $args['id'];
+
+    try {
+
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare(
+            'DELETE FROM productos WHERE id = ?'
+        );
+
+        $stmt->execute([$id]);
+
+        $pdo->commit();
+
+        return $response->withStatus(204);
+
+    } catch (Exception $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $e;
+    }
+});
+
 
 return $app;
