@@ -12,6 +12,10 @@ Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
 
 $app = AppFactory::create();
 
+require __DIR__ . '/middleware/auth.php';
+
+$app->add(logMiddleware);
+
 $renderer = new PhpRenderer(__DIR__ . '/views');
 
 $database = new Database();
