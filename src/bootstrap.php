@@ -177,6 +177,11 @@ $app->get('/', function ($request, $response) use ($renderer) {
 });
 
 
+// ==========================================
+// RUTAS PROTEGIDAS
+// ==========================================
+
+
 // GET /productos/
 // Lista todos los productos
 $app->get('/productos/', function ($request, $response) use ($renderer, $pdo) {
@@ -187,7 +192,8 @@ $app->get('/productos/', function ($request, $response) use ($renderer, $pdo) {
     return $renderer->render($response, 'productos/index.php', [
         'productos' => $productos
     ]);
-});
+
+})->add(authMiddleware);
 
 
 // GET /productos/create
@@ -195,7 +201,8 @@ $app->get('/productos/', function ($request, $response) use ($renderer, $pdo) {
 $app->get('/productos/create', function ($request, $response) use ($renderer) {
 
     return $renderer->render($response, 'productos/create.php');
-});
+
+})->add(authMiddleware);
 
 
 // GET /productos/update/{id}
@@ -216,7 +223,8 @@ $app->get('/productos/update/{id}', function ($request, $response, $args) use ($
     return $renderer->render($response, 'productos/update.php', [
         'producto' => $producto
     ]);
-});
+
+})->add(authMiddleware);
 
 
 // GET /productos/{id}
@@ -237,7 +245,8 @@ $app->get('/productos/{id}', function ($request, $response, $args) use ($rendere
     return $renderer->render($response, 'productos/show.php', [
         'producto' => $producto
     ]);
-});
+
+})->add(authMiddleware);
 
 
 // POST /productos
@@ -281,7 +290,8 @@ $app->post('/productos', function ($request, $response) use ($pdo) {
 
         throw $e;
     }
-});
+
+})->add(authMiddleware);
 
 
 // PUT /productos/{id}
@@ -329,7 +339,8 @@ $app->put('/productos/{id}', function ($request, $response, $args) use ($pdo) {
 
         throw $e;
     }
-});
+
+})->add(authMiddleware);
 
 
 // DELETE /productos/{id}
@@ -360,7 +371,8 @@ $app->delete('/productos/{id}', function ($request, $response, $args) use ($pdo)
 
         throw $e;
     }
-  
+
+})->add(authMiddleware);
 });
 
 
