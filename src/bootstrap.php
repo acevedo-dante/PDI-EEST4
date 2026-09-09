@@ -21,6 +21,154 @@ $renderer = new PhpRenderer(__DIR__ . '/views');
 $database = new Database();
 $pdo = $database->getConnection();
 
+// ==========================================
+// AUTENTICACIÓN
+// ==========================================
+
+// GET /auth/register
+$app->get('/auth/register', function ($request, $response) use ($renderer) {
+
+    return $renderer->render(
+        $response,
+        'auth/register.php'
+    );
+});
+
+
+// POST /auth/register
+$app->post('/auth/register', function ($request, $response) use ($pdo) {
+
+    $data = $request->getParsedBody();
+
+    $name = trim($data['name'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $password = $data['password'] ?? '';
+
+    if ($name === '' || $email === '' || $password === '') {
+        $response->getBody()->write(
+            'Todos los campos son obligatorios.'
+        );
+
+        return $response->withStatus(400);
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $response->getBody()->write(
+            'El email no es válido.'
+        );
+
+        return $response->withStatus(400);
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT id FROM users WHERE email = ?'
+    );
+
+    $stmt->execute([$email]);
+
+    if ($stmt->fetch()) {
+        $response->getBody()->write(
+            'El email ya está registrado.'
+        );
+
+        return $response->withStatus(409);
+    }
+
+    $passwordHash = password_hash(
+        $password,
+        PASSWORD_DEFAULT
+    );
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO users (name, email, password)
+         VALUES (?, ?, ?)'
+    );
+
+    $stmt->execute([
+        $name,
+        $email,
+        $passwordHash
+    ]);
+
+    return $response
+        ->withHeader('Location', '/auth/login')
+        ->withStatus(302);
+});
+
+
+// GET /auth/login
+$app->get('/auth/login', function ($request, $response) use ($renderer) {
+
+    return $renderer->render(
+        $response,
+        'auth/login.php'
+    );
+});
+
+
+// POST /auth/login
+$app->post('/auth/login', function ($request, $response) use ($pdo) {
+
+    $data = $request->getParsedBody();
+
+    $email = trim($data['email'] ?? '');
+    $password = $data['password'] ?? '';
+
+    if ($email === '' || $password === '') {
+
+        $response->getBody()->write(
+            'Email y contraseña son obligatorios.'
+        );
+
+        return $response->withStatus(400);
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT id, name, email, password
+         FROM users
+         WHERE email = ?'
+    );
+
+    $stmt->execute([$email]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (
+        !$user ||
+        !password_verify($password, $user['password'])
+    ) {
+
+        $response->getBody()->write(
+            'Email o contraseña incorrectos.'
+        );
+
+        return $response->withStatus(401);
+    }
+
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    session_regenerate_id(true);
+
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
+    $_SESSION['user_email'] = $user['email'];
+
+    return $response
+        ->withHeader('Location', '/productos/')
+        ->withStatus(302);
+});
+
+
+// ==========================================
+// PRODUCTOS
+// ==========================================
+
+// GET /
+$app->get('/', function ($request, $response) use ($renderer) {
+    return $renderer->render($response, 'index.php');
+});
 
 // GET /
 // Página principal
@@ -212,6 +360,7 @@ $app->delete('/productos/{id}', function ($request, $response, $args) use ($pdo)
 
         throw $e;
     }
+  
 });
 
 
