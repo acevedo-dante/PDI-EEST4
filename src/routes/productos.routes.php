@@ -1,58 +1,41 @@
 <?php
 
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
+use Slim\App;
 
-$app->get('/productos', function (Request $request, Response $response) use ($renderer, $database) {
-    $productos = $database->query("SELECT * FROM productos")->fetchAll();
+return function (App $app) {
+    // Rutas del CRUD de productos
+    $app->get('/productos/', function ($request, $response) {
+        // Lógica para listar productos
+        return $response;
+    });
 
-    return $renderer->render($response, 'productos/index.php', [
-        'productos' => $productos
-    ]);
-});
+    $app->get('/productos/create', function ($request, $response) {
+        // Formulario de creación
+        return $response;
+    });
 
-$app->get('/productos/', function (Request $request, Response $response) use ($renderer, $database) {
-    $productos = $database->query("SELECT * FROM productos")->fetchAll();
+    $app->get('/productos/{id}', function ($request, $response) {
+        // Ver producto individual
+        return $response;
+    });
 
-    return $renderer->render($response, 'productos/index.php', [
-        'productos' => $productos
-    ]);
-});
+    $app->post('/productos', function ($request, $response) {
+        // Guardar producto
+        return $response;
+    });
 
-$app->get('/productos/create', function (Request $request, Response $response) use ($renderer) {
-    return $renderer->render($response, 'productos/create.php');
-});
+    $app->get('/productos/update/{id}', function ($request, $response) {
+        // Formulario de edición
+        return $response;
+    });
 
-$app->get('/productos/{id}', function (Request $request, Response $response, array $args) use ($renderer, $database) {
-    $id = $args['id'];
+    $app->put('/productos/{id}', function ($request, $response) {
+        // Actualizar producto
+        return $response;
+    });
 
-    $stmt = $database->prepare("SELECT * FROM productos WHERE id = ?");
-    $stmt->execute([$id]);
-
-    $producto = $stmt->fetch();
-
-    if (!$producto) {
-        return $renderer->render($response, 'productos/not_found.php');
-    }
-
-    return $renderer->render($response, 'productos/show.php', [
-        'producto' => $producto
-    ]);
-});
-
-$app->get('/productos/update/{id}', function (Request $request, Response $response, array $args) use ($renderer, $database) {
-    $id = $args['id'];
-
-    $stmt = $database->prepare("SELECT * FROM productos WHERE id = ?");
-    $stmt->execute([$id]);
-
-    $producto = $stmt->fetch();
-
-    if (!$producto) {
-        return $renderer->render($response, 'productos/not_found.php');
-    }
-
-    return $renderer->render($response, 'productos/update.php', [
-        'producto' => $producto
-    ]);
-});
+    $app->delete('/productos/{id}', function ($request, $response) {
+        // Eliminar producto
+        return $response;
+    });
+};
