@@ -26,8 +26,8 @@ return function (App $app, PhpRenderer $renderer) {
         });
 
         // POST /productos
-        $group->post('/productos', function (Request $request, Response $response) use ($controller) {
-            return $controller->store($request, $response);
+        $group->post('/productos', function (Request $request, Response $response) use ($controller, $renderer) {
+            return $controller->store($request, $response, $renderer);
         });
 
         // GET /productos/update/{id}
