@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Producto no encontrado</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; }
+    </style>
 </head>
 <body>
 
@@ -10,7 +13,7 @@
 
     <p>El producto que buscás no existe.</p>
 
-    <a href="/productos/">Volver a productos</a>
+    <a href="<?= htmlspecialchars($basePath) ?>/productos/">Volver a productos</a>
 
 </body>
 </html>

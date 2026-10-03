@@ -13,8 +13,15 @@ class ProductoPersistence {
         return $this->db;
     }
 
-    public function getAll() {
-        $stmt = $this->db->query("SELECT * FROM productos");
+    public function getAll($limit = null) {
+        if ($limit === null) {
+            $stmt = $this->db->query("SELECT * FROM productos ORDER BY id");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        $stmt = $this->db->prepare("SELECT * FROM productos ORDER BY id LIMIT :limit");
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

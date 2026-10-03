@@ -28,7 +28,7 @@
         <input type="text" name="descripcion" value="<?= htmlspecialchars($old['descripcion'] ?? '') ?>">
 
         <label>Precio:</label>
-        <input type="number" name="precio" min="0" step="any" value="<?= htmlspecialchars($old['precio'] ?? '') ?>" required>
+        <input type="number" name="precio" min="0" step="1"value="<?= htmlspecialchars($old['precio'] ?? '') ?>" required>
 
         <label>Stock:</label>
         <input type="number" name="stock" min="0" step="1" value="<?= htmlspecialchars($old['stock'] ?? '') ?>">

@@ -15,6 +15,8 @@
 
 <h1>Listado de Productos</h1>
 
+<p><a href="<?= htmlspecialchars($basePath) ?>/productos/create">+ Crear producto</a></p>
+
 <?php if (empty($productos)): ?>
     <p>No hay productos para mostrar.</p>
 <?php else: ?>
@@ -22,9 +24,9 @@
         <?php foreach ($productos as $producto): ?>
             <li>
                 <a href="<?= htmlspecialchars($basePath) ?>/productos/<?= (int) $producto['id'] ?>">
-                    <?= htmlspecialchars($producto['name']) ?>
+                    <?= htmlspecialchars($producto['nombre']) ?>
                 </a>
-                <span class="precio">$<?= number_format($producto['price'], 0, ',', '.') ?></span>
+                <span class="precio">$<?= number_format((float) $producto['precio'], 0, ',', '.') ?></span>
             </li>
         <?php endforeach; ?>
     </ul>

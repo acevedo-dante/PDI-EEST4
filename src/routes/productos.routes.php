@@ -36,8 +36,8 @@ return function (App $app, PhpRenderer $renderer) {
         });
 
         // PUT /productos/{id}
-        $group->put('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller) {
-            return $controller->update($request, $response, $args);
+        $group->put('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
+            return $controller->update($request, $response, $args, $renderer);
         });
 
         // GET /productos/{id}

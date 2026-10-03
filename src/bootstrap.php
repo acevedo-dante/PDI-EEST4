@@ -2,6 +2,7 @@
 
 use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
+use Slim\Middleware\MethodOverrideMiddleware;
 use Dotenv\Dotenv;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -23,6 +24,9 @@ require __DIR__ . '/middleware/log.php';
 
 // Middleware global: se ejecuta en todas las peticiones
 $app->add('logMiddleware');
+// Los formularios envían PUT/DELETE como POST con el campo oculto _METHOD.
+// Se agrega ANTES del body parsing para que este se ejecute primero (los middlewares corren en orden inverso).
+$app->add(new MethodOverrideMiddleware());
 $app->addBodyParsingMiddleware();
 
 // Cargar rutas modularizadas

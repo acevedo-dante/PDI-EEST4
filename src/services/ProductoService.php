@@ -9,8 +9,8 @@ class ProductoService {
         $this->persistence = new ProductoPersistence();
     }
 
-    public function obtenerTodos() {
-        return $this->persistence->getAll();
+    public function obtenerTodos($limit = null) {
+        return $this->persistence->getAll($limit);
     }
 
     public function obtenerPorId($id) {
