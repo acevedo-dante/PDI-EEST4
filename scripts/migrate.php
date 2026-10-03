@@ -200,7 +200,10 @@ final class SqlMigrationRunner
         'filename' => $migration['filename'],
       ]);
 
-      $pdo->commit();
+      // En MySQL el DDL (CREATE/ALTER) cierra la transacción solo
+      if ($pdo->inTransaction()) {
+        $pdo->commit();
+      }
 
       fwrite(STDOUT, 'Aplicada ' . $migration['filename'] . "\n");
     } catch (Throwable $throwable) {
