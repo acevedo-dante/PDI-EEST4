@@ -2,6 +2,7 @@
 
 use Slim\App;
 use Slim\Views\PhpRenderer;
+use Slim\Routing\RouteCollectorProxy;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -11,39 +12,44 @@ return function (App $app, PhpRenderer $renderer) {
 
     $controller = new ProductoController();
 
-    // GET /productos/
-    $app->get('/productos/', function (Request $request, Response $response) use ($controller, $renderer) {
-        return $controller->index($request, $response, $renderer);
-    });
+    // Todas las rutas de productos requieren sesión iniciada
+    $app->group('', function (RouteCollectorProxy $group) use ($controller, $renderer) {
 
-    // GET /productos/create
-    $app->get('/productos/create', function (Request $request, Response $response) use ($controller, $renderer) {
-        return $controller->showCreate($request, $response, $renderer);
-    });
+        // GET /productos/
+        $group->get('/productos/', function (Request $request, Response $response) use ($controller, $renderer) {
+            return $controller->index($request, $response, $renderer);
+        });
 
-    // POST /productos
-    $app->post('/productos', function (Request $request, Response $response) use ($controller) {
-        return $controller->store($request, $response);
-    });
+        // GET /productos/create
+        $group->get('/productos/create', function (Request $request, Response $response) use ($controller, $renderer) {
+            return $controller->showCreate($request, $response, $renderer);
+        });
 
-    // GET /productos/update/{id}
-    $app->get('/productos/update/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
-        return $controller->showUpdate($request, $response, $args, $renderer);
-    });
+        // POST /productos
+        $group->post('/productos', function (Request $request, Response $response) use ($controller) {
+            return $controller->store($request, $response);
+        });
 
-    // PUT /productos/{id}
-    $app->put('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller) {
-        return $controller->update($request, $response, $args);
-    });
+        // GET /productos/update/{id}
+        $group->get('/productos/update/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
+            return $controller->showUpdate($request, $response, $args, $renderer);
+        });
 
-    // GET /productos/{id}
-    $app->get('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
-        return $controller->show($request, $response, $args, $renderer);
-    });
+        // PUT /productos/{id}
+        $group->put('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller) {
+            return $controller->update($request, $response, $args);
+        });
 
-    // DELETE /productos/{id}
-    $app->delete('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller) {
-        return $controller->delete($request, $response, $args);
-    });
+        // GET /productos/{id}
+        $group->get('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
+            return $controller->show($request, $response, $args, $renderer);
+        });
+
+        // DELETE /productos/{id}
+        $group->delete('/productos/{id}', function (Request $request, Response $response, array $args) use ($controller) {
+            return $controller->delete($request, $response, $args);
+        });
+
+    })->add('authMiddleware');
 
 };

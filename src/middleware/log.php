@@ -1,72 +1,45 @@
-```php
+<?php
+
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Psr7\Response as SlimResponse;
 
 /**
- * Middleware de autenticación
+ * Middleware global de logging.
+ * Se registra en bootstrap.php con $app->add('logMiddleware').
  */
-function authMiddleware(Request $request, RequestHandler $handler): Response
-{
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+function logMiddleware(
+    Request $request,
+    RequestHandler $handler
+): Response {
 
-    $userId = $_SESSION["user_id"] ?? null;
-
-    if ($userId === null || $userId === "") {
-        return new SlimResponse()
-            ->withHeader("Location", "/auth/login")
-            ->withStatus(302);
-    }
-
-    $request = $request->withAttribute("user_id", $userId);
-
-    return $handler->handle($request);
-}
-
-
-/**
- * Middleware global de logging
- */
-function logMiddleware(Request $request, RequestHandler $handler): Response
-{
-    // 1. Registrar el tiempo inicial ANTES de ejecutar la ruta.
+    // 1. Tiempo inicial, ANTES de ejecutar la ruta
     $start = microtime(true);
 
-    // 2. Permitir que la ruta se ejecute y obtener su respuesta.
+    // 2. Ejecutar la ruta y obtener su respuesta
     $response = $handler->handle($request);
 
-    // 3. Calcular el tiempo de ejecución en milisegundos.
+    // 3. Tiempo de ejecución en milisegundos
     $executionTime = (microtime(true) - $start) * 1000;
 
-    // 4. Obtener los datos necesarios.
-    $date = date("Y-m-d H:i:s");
-    $method = $request->getMethod();
-    $path = $request->getUri()->getPath();
-    $status = $response->getStatusCode();
-
+    // 4. Línea de log: fecha, método, ruta, estado y tiempo
     $logLine = sprintf(
-        "[%s] %s %s - Status: %d - Tiempo: %.2f ms",
-        $date,
-        $method,
-        $path,
-        $status,
+        '[%s] %s %s - Status: %d - Tiempo: %.2f ms',
+        date('Y-m-d H:i:s'),
+        $request->getMethod(),
+        $request->getUri()->getPath(),
+        $response->getStatusCode(),
         $executionTime
     );
 
-    // 5. Imprimir en consola.
+    // 5. Consola (stderr del servidor) y final del archivo .log
     error_log($logLine);
-
-    // 5. Escribir al final del archivo .log.
     file_put_contents(
-        __DIR__ . "/app.log",
+        __DIR__ . '/../../app.log',
         $logLine . PHP_EOL,
         FILE_APPEND | LOCK_EX
     );
 
-    // 6. Devolver la respuesta SIN MODIFICAR.
+    // 6. La respuesta se devuelve sin modificar
     return $response;
 }
-```

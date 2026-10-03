@@ -8,21 +8,25 @@
 
 <h1>Crear cuenta</h1>
 
-<form method="POST" action="/auth/register">
+<?php if (!empty($error)): ?>
+    <p style="color: red;"><?= htmlspecialchars($error) ?></p>
+<?php endif; ?>
+
+<form method="POST" action="<?= htmlspecialchars($basePath) ?>/auth/register">
 
     <div>
         <label>Nombre:</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name" value="<?= htmlspecialchars($old['name'] ?? '') ?>" required>
     </div>
 
     <div>
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" value="<?= htmlspecialchars($old['email'] ?? '') ?>" required>
     </div>
 
     <div>
         <label>Contraseña:</label>
-        <input type="password" name="password" required>
+        <input type="password" name="password" minlength="8" required>
     </div>
 
     <button type="submit">
@@ -31,7 +35,7 @@
 
 </form>
 
-<a href="/auth/login">
+<a href="<?= htmlspecialchars($basePath) ?>/auth/login">
     Ya tengo una cuenta
 </a>
 

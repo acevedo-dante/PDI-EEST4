@@ -8,11 +8,15 @@
 
 <h1>Iniciar sesión</h1>
 
-<form method="POST" action="/auth/login">
+<?php if (!empty($error)): ?>
+    <p style="color: red;"><?= htmlspecialchars($error) ?></p>
+<?php endif; ?>
+
+<form method="POST" action="<?= htmlspecialchars($basePath) ?>/auth/login">
 
     <div>
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" value="<?= htmlspecialchars($old['email'] ?? '') ?>" required>
     </div>
 
     <div>
@@ -26,7 +30,7 @@
 
 </form>
 
-<a href="/auth/register">
+<a href="<?= htmlspecialchars($basePath) ?>/auth/register">
     Crear una cuenta
 </a>
 
