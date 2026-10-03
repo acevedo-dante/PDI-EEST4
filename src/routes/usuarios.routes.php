@@ -6,20 +6,23 @@ use Slim\Routing\RouteCollectorProxy;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+require_once __DIR__ . '/../controllers/UsuarioController.php';
+
 return function (App $app, PhpRenderer $renderer) {
 
-    // Todas las rutas de usuarios requieren sesión iniciada
-    $app->group('', function (RouteCollectorProxy $group) use ($renderer) {
+    $controller = new UsuarioController();
 
-        // Listar usuarios
-        $group->get('/usuarios/', function (Request $request, Response $response) use ($renderer) {
-            return $renderer->render($response, 'usuarios/index.php');
+    // Todas las rutas de usuarios requieren sesión iniciada
+    $app->group('', function (RouteCollectorProxy $group) use ($controller, $renderer) {
+
+        // GET /usuarios/
+        $group->get('/usuarios/', function (Request $request, Response $response) use ($controller, $renderer) {
+            return $controller->index($request, $response, $renderer);
         });
 
-        // Mostrar un usuario específico
-        $group->get('/usuarios/{id}', function (Request $request, Response $response, array $args) use ($renderer) {
-            $id = $args['id'];
-            return $renderer->render($response, 'usuarios/show.php', ['id' => $id]);
+        // GET /usuarios/{id}
+        $group->get('/usuarios/{id}', function (Request $request, Response $response, array $args) use ($controller, $renderer) {
+            return $controller->show($request, $response, $args, $renderer);
         });
 
     })->add('authMiddleware');
