@@ -3,6 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\PhpRenderer;
+use Slim\Routing\RouteContext;
 
 require_once __DIR__ . '/../services/ProductoService.php';
 
@@ -14,8 +15,29 @@ class ProductoController {
     }
 
     public function index(Request $request, Response $response, PhpRenderer $renderer) {
-        $productos = $this->service->obtenerTodos();
-        return $renderer->render($response, 'productos/index.php', ['productos' => $productos]);
+        // Listado de ejemplo: array asociativo (id, name, price)
+        $productos = [
+            ['id' => 1, 'name' => 'Camiseta de futbol', 'price' => 15000],
+            ['id' => 2, 'name' => 'Botines', 'price' => 45000],
+            ['id' => 3, 'name' => 'Pelota', 'price' => 2000],
+            ['id' => 4, 'name' => 'Canilleras', 'price' => 5000],
+            ['id' => 5, 'name' => 'Guantes de arquero', 'price' => 12000],
+        ];
+
+        // ?limit=N muestra solo los primeros N elementos (entero positivo)
+        $limit = filter_var(
+            $request->getQueryParams()['limit'] ?? null,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+        if ($limit !== false) {
+            $productos = array_slice($productos, 0, $limit);
+        }
+
+        return $renderer->render($response, 'productos/index.php', [
+            'productos' => $productos,
+            'basePath' => RouteContext::fromRequest($request)->getBasePath(),
+        ]);
     }
 
     public function showCreate(Request $request, Response $response, PhpRenderer $renderer) {
