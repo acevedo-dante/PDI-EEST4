@@ -19,7 +19,6 @@ $app->setBasePath('/PDI-EEST4-main/public');
 $renderer = new PhpRenderer(__DIR__ . '/views');
 
 // Middlewares
-require __DIR__ . '/middleware/auth.php';
 require __DIR__ . '/middleware/log.php';
 
 // Middleware global: se ejecuta en todas las peticiones
@@ -30,8 +29,6 @@ $app->add(new MethodOverrideMiddleware());
 $app->addBodyParsingMiddleware();
 
 // Cargar rutas modularizadas
-(require __DIR__ . '/routes/auth.routes.php')($app, $renderer);
-(require __DIR__ . '/routes/usuarios.routes.php')($app, $renderer);
-(require __DIR__ . '/routes/productos.routes.php')($app, $renderer);
+(require __DIR__ . '/routes/escaneo.routes.php')($app, $renderer);
 
 return $app;
