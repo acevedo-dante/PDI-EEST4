@@ -33,5 +33,6 @@ $app->addBodyParsingMiddleware();
 (require __DIR__ . '/routes/auth.routes.php')($app, $renderer);
 (require __DIR__ . '/routes/usuarios.routes.php')($app, $renderer);
 (require __DIR__ . '/routes/productos.routes.php')($app, $renderer);
+(require __DIR__ . '/routes/escaneo.routes.php')($app, $renderer);
 
 return $app;
